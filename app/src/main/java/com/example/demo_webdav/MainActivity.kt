@@ -1,10 +1,10 @@
 package com.example.demo_webdav
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
+import com.example.demo_webdav.databinding.ActivityMainBinding
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -13,18 +13,11 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        // 绑定视图控件
-        val show = findViewById<TextView>(R.id.show)
-        val createButton = findViewById<Button>(R.id.create)
-        val uploadButton = findViewById<Button>(R.id.upload)
-        val downloadButton = findViewById<Button>(R.id.download)
-        val renameButton = findViewById<Button>(R.id.rename)
-        val deleteButton = findViewById<Button>(R.id.delete)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // 设置创建文件夹按钮的点击事件
-        createButton.setOnClickListener {
+        binding.create.setOnClickListener {
             // 启动子线程
             thread {
                 // 连接到坚果云WebDAV服务器，并返回sardine对象
@@ -37,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 设置上传文件按钮的点击事件
-        uploadButton.setOnClickListener {
+        binding.upload.setOnClickListener {
             // 启动子线程
             thread {
                 val sardine = initSardine()
@@ -48,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 设置下载文件按钮的点击事件
-        downloadButton.setOnClickListener {
+        binding.download.setOnClickListener {
             var fileContent = ""
             // 启动子线程
             thread {
@@ -56,11 +49,11 @@ class MainActivity : AppCompatActivity() {
                 fileContent = downloadFile(sardine)
             }.join()  // 阻塞子线程，以取得fileContent的值
             // 将fileContent的值赋予show文本控件显示出来
-            show.text = fileContent
+            binding.show.text = fileContent
         }
 
         // 设置重命名文件夹按钮的点击事件
-        renameButton.setOnClickListener {
+        binding.rename.setOnClickListener {
             // 启动子线程
             thread {
                 val sardine = initSardine()
@@ -71,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 设置删除文件夹按钮的点击事件
-        deleteButton.setOnClickListener {
+        binding.delete.setOnClickListener {
             // 启动子线程
             thread {
                 val sardine = initSardine()
@@ -80,40 +73,46 @@ class MainActivity : AppCompatActivity() {
             // Toast一下提醒已删除
             Toast.makeText(this, "已删除", Toast.LENGTH_SHORT).show()
         }
+
+        //切换动画
+        binding.animation.setOnClickListener{
+            val intent = Intent(this, AnimationActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     // 与坚果云WebDAV服务器建立连接，返回sardine对象以进行操作
-    fun initSardine(): OkHttpSardine {
+    private fun initSardine(): OkHttpSardine {
         val sardine = OkHttpSardine()
         // 坚果云的账号
-        val userName = "demo_webdav@163.com"
+        val userName = "fangshancun@gmail.com"
         // 授权给第三方应用的密码口令
-        val passWord = "aqkgubiy4z55rc6p"
+        val passWord = "awdw3cwkrmmrey3y"
         // 建立连接
         sardine.setCredentials(userName, passWord)
         // 返回sardine对象
         return sardine
     }
 
-    fun createDir(sardine: OkHttpSardine) {
-        val dirPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
+    private fun createDir(sardine: OkHttpSardine) {
+        val dirPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
         sardine.createDirectory(dirPath)
     }
 
-    fun checkExistence(sardine: OkHttpSardine): Boolean {
-        val dirPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
+    private fun checkExistence(sardine: OkHttpSardine): Boolean {
+        val dirPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
         return sardine.exists(dirPath)
     }
 
-    fun uploadFile(sardine: OkHttpSardine, fileContent: String) {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹/测试文本.txt"
+    private fun uploadFile(sardine: OkHttpSardine, fileContent: String) {
+        val filePath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹/测试文本.txt"
         // 将变量转变为byte字节数组，以传输到网盘
         val data = fileContent.toByteArray()
         sardine.put(filePath, data)
     }
 
-    fun downloadFile(sardine: OkHttpSardine): String {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹/测试文本.txt"
+    private fun downloadFile(sardine: OkHttpSardine): String {
+        val filePath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹/测试文本.txt"
         val download = sardine.get(filePath)
         // 以文件流的形式读取下载的文件，并转换为字符串
         val fileContent = BufferedReader(InputStreamReader(download)).useLines { lines ->
@@ -126,14 +125,14 @@ class MainActivity : AppCompatActivity() {
         return fileContent
     }
 
-    fun moveOrRenameFile(sardine: OkHttpSardine) {
-        val oldPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
-        val newPath = "https://dav.jianguoyun.com/dav/我的坚果云/renamed_or_moved_demo_webdav文件夹"
+    private fun moveOrRenameFile(sardine: OkHttpSardine) {
+        val oldPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
+        val newPath = "https://dav.jianguoyun.com/dav/renamed_or_moved_demo_webdav文件夹"
         sardine.move(oldPath, newPath)
     }
 
-    fun deleteFile(sardine: OkHttpSardine) {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/renamed_or_moved_demo_webdav文件夹"
+    private fun deleteFile(sardine: OkHttpSardine) {
+        val filePath = "https://dav.jianguoyun.com/dav/renamed_or_moved_demo_webdav文件夹"
         sardine.delete(filePath)
     }
 }
