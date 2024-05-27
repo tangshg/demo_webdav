@@ -86,9 +86,9 @@ class MainActivity : AppCompatActivity() {
     fun initSardine(): OkHttpSardine {
         val sardine = OkHttpSardine()
         // 坚果云的账号
-        val userName = "demo_webdav@163.com"
+        val userName = "fangshancun@gmail.com"
         // 授权给第三方应用的密码口令
-        val passWord = "aqkgubiy4z55rc6p"
+        val passWord = "awdw3cwkrmmrey3y"
         // 建立连接
         sardine.setCredentials(userName, passWord)
         // 返回sardine对象
@@ -96,24 +96,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun createDir(sardine: OkHttpSardine) {
-        val dirPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
+        val dirPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
         sardine.createDirectory(dirPath)
     }
 
     fun checkExistence(sardine: OkHttpSardine): Boolean {
-        val dirPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
+        val dirPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
         return sardine.exists(dirPath)
     }
 
     fun uploadFile(sardine: OkHttpSardine, fileContent: String) {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹/测试文本.txt"
+        val filePath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹/测试文本.txt"
         // 将变量转变为byte字节数组，以传输到网盘
         val data = fileContent.toByteArray()
         sardine.put(filePath, data)
     }
 
     fun downloadFile(sardine: OkHttpSardine): String {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹/测试文本.txt"
+        val filePath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹/测试文本.txt"
         val download = sardine.get(filePath)
         // 以文件流的形式读取下载的文件，并转换为字符串
         val fileContent = BufferedReader(InputStreamReader(download)).useLines { lines ->
@@ -127,13 +127,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun moveOrRenameFile(sardine: OkHttpSardine) {
-        val oldPath = "https://dav.jianguoyun.com/dav/我的坚果云/demo_webdav文件夹"
-        val newPath = "https://dav.jianguoyun.com/dav/我的坚果云/renamed_or_moved_demo_webdav文件夹"
+        val oldPath = "https://dav.jianguoyun.com/dav/demo_webdav文件夹"
+        val newPath = "https://dav.jianguoyun.com/dav/renamed_or_moved_demo_webdav文件夹"
         sardine.move(oldPath, newPath)
     }
 
     fun deleteFile(sardine: OkHttpSardine) {
-        val filePath = "https://dav.jianguoyun.com/dav/我的坚果云/renamed_or_moved_demo_webdav文件夹"
+        val filePath = "https://dav.jianguoyun.com/dav/renamed_or_moved_demo_webdav文件夹"
         sardine.delete(filePath)
     }
 }
